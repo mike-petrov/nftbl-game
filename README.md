@@ -18,7 +18,7 @@ Web3 NFT Football Management game-changing decentralized application with Smart 
 - Football is huge market
 - Play2Earn NFT game
 - P2P matches
-- Fast and cheap Hedera blockchain
-- Compatible with projects from Hedera ecosystem 
+- Fast and cheap Tron blockchain
+- Compatible with projects from Tron ecosystem 
 
 [Tron 2022 Hackathon Project](https://tron.devpost.com/)
