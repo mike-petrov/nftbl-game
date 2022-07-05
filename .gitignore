@@ -1,0 +1,25 @@
+# Logs
+logs
+*.log
+npm-debug.log*
+*.lock
+
+# Dependency directories
+*package-lock.json
+*node_modules
+
+# Optional npm cache directory
+.npm
+
+# Prod Bundle
+*/build
+*/dist
+
+.vscode
+.idea
+.env
+
+# Prod Bundle
+*/src/sets.js
+*/src/sets.json
+*.DS_Store
