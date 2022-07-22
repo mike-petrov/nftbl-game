@@ -21,6 +21,7 @@ import {
 import {
     faHeart,
 } from '@fortawesome/free-regular-svg-icons';
+import Players from './players.jsx';
 import './App.css';
 
 library.add(
@@ -57,79 +58,7 @@ const App = () => {
   });
   const [myPlayers, setMyPlayers] = useState([]);
   const [myStakedPlayers, setMyStakedPlayers] = useState([]);
-  const [players] = useState([{
-    id: '0001',
-    name: 'Timothy Daniels',
-    position: 'DM',
-    rating: 88,
-    src: './img/players/1.png',
-  }, {
-    id: '0002',
-    name: 'Joe Smith',
-    position: 'LB',
-    rating: 57,
-    src: './img/players/2.png',
-  }, {
-    id: '0003',
-    name: 'John Neal',
-    position: 'RB',
-    rating: 60,
-    src: './img/players/3.png',
-  }, {
-    id: '0004',
-    name: 'Oscar Jones',
-    position: 'GK',
-    rating: 94,
-    src: './img/players/4.png',
-  }, {
-    id: '0005',
-    name: 'Philip Ray',
-    position: 'LW',
-    rating: 40,
-    src: './img/players/5.png',
-  }, {
-    id: '0006',
-    name: 'William Wilson',
-    position: 'RW',
-    rating: 44,
-    src: './img/players/6.png',
-  }, {
-    id: '0007',
-    name: 'Bradley Padilla',
-    position: 'CF',
-    rating: 79,
-    src: './img/players/7.png',
-  }, {
-    id: '0008',
-    name: 'Jeffrey Lamb',
-    position: 'RB',
-    rating: 82,
-    src: './img/players/8.png',
-  }, {
-    id: '0009',
-    name: 'Wesley Brown',
-    position: 'DM',
-    rating: 85,
-    src: './img/players/9.png',
-  }, {
-    id: '0010',
-    name: 'Steven White',
-    position: 'LM',
-    rating: 38,
-    src: './img/players/10.png',
-  }, {
-    id: '0011',
-    name: 'Stanley Horton',
-    position: 'RM',
-    rating: 20,
-    src: './img/players/11.png',
-  }, {
-    id: '0012',
-    name: 'Dale Vega',
-    position: 'CF',
-    rating: 16,
-    src: './img/players/12.png',
-  }]);
+  const [players] = useState(Players);
   const [popup, setPopup] = useState({ current: null, item: null });
 
   useEffect(() => {
