@@ -15,10 +15,10 @@ Web3 NFT Football Management game-changing decentralized application with Smart 
 
 ## Game Changing Approach
 
-- Football is huge market
-- Play2Earn NFT game
-- P2P matches
-- Fast and cheap Tron blockchain
-- Compatible with projects from Tron ecosystem 
+- Football games is a huge market
+- Play2Earn and NFT mechanics
+- P2P matches since release
+- High-throughput Tron blockchain
+- Easy to start for non-crypto gamers 
 
 [Tron 2022 Hackathon Project](https://tron.devpost.com/)
