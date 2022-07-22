@@ -194,12 +194,12 @@ const Academy = ({
                   className="btn"
                   onClick={() => onStakeBalls()}
                   style={tokens.balls === 0 ? { pointerEvents: 'none', opacity: 0.6 } : {}}
-                >Stake Balls</div>
+                >Stake All Balls</div>
                 <div
                   className="btn"
                   onClick={() => onUnstakeBalls()}
                   style={myStakedBalls === 0 ? { pointerEvents: 'none', opacity: 0.6 } : {}}
-                >Unstake Balls</div>
+                >Unstake All Balls</div>
               </div>
             </div>
             <div className="banner banner_academy">
