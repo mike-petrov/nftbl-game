@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 import Pizzicato from 'pizzicato';
@@ -14,9 +14,21 @@ const Battles = ({
     setTokens,
     onPopup,
   }) => {
+  const [playerLimit, setPlayerLimit] = useState(0);
+  const [betAmount, setBetAmount] = useState(0);
   const [gamePlayers, setGamePlayers] = useState([]);
   const [start, setStart] = useState(false);
   const [gameScore, setGameScore] = useState(null);
+
+
+  useEffect(() => {
+    if (typeof contracts.FootballGame !== 'string' && betAmount !== 0) {
+      contracts.FootballGame.getEnergy(1).call().then((playerHex) => {
+        setPlayerLimit(Number(playerHex._hex) / 10);
+      });
+    }
+  }, [contracts]); // eslint-disable-line react-hooks/exhaustive-deps
+
 
   const onScroll = () => {
     const scrollDiv = document.getElementById("scroll_anchor").offsetTop - 111;
@@ -36,10 +48,10 @@ const Battles = ({
 	};
 
   const onStart = () => {
-    if (tokens.balls > 26160338) {
+    if (betAmount > 0 && betAmount <= tokens.balls) {
       contracts.FootballGame.players().call().then((playerHex) => {
         // const address = window.tronLink.tronWeb.address.fromHex(playerHex);
-        contracts.FootballGame.play(Number(players[0].id), Number(players[1].id)).send().then((resultGame) => {
+        contracts.FootballGame.play(1, betAmount).send().then((resultGame) => {
           setStart(true);
           const checkEvent = setInterval(() => {
             fetch(`https://api.shasta.trongrid.io/v1/transactions/${resultGame}/events`, {
@@ -53,18 +65,20 @@ const Battles = ({
 
                 clearInterval(checkEvent);
 
+                setPlayerLimit(playerLimit - 1);
+
                 let attackerScore = Math.ceil(Math.random() * 5);
                 let defenderScore = Math.ceil(Math.random() * 5)
                 if (response.data[0].result.result === '1') {
                   if (attackerScore <= defenderScore) {
                     attackerScore = Math.ceil(Math.random() * (5 - defenderScore + 1) + defenderScore + 1);
                   }
-                  setTokens({...tokens, balls: tokens.balls + response.data[0].block_number });
+                  setTokens({...tokens, balls: tokens.balls + betAmount });
                 } else if (response.data[0].result.result === '2') {
                   if (defenderScore <= attackerScore) {
                     defenderScore = Math.ceil(Math.random() * (5 - attackerScore + 1) + attackerScore + 1);
                   }
-                  setTokens({...tokens, balls: tokens.balls - response.data[0].block_number });
+                  setTokens({...tokens, balls: tokens.balls - betAmount });
                 } else {
                   attackerScore = defenderScore;
                 }
@@ -73,7 +87,6 @@ const Battles = ({
                   attackerId: attackerScore,
                   defenderId: defenderScore,
                   score: Number(response.data[0].result.result),
-                  sum: response.data[0].block_number,
                 });
               }
             });
@@ -81,12 +94,13 @@ const Battles = ({
         });
       });
     } else {
-      onPopup('error', `Not enough Balls for game. Needs more: ${26160338 - tokens.balls})`);
+      onPopup('error', 'Wrong bet amount');
     }
 	};
 
   const onReStart = () => {
     setStart(false);
+    setBetAmount(0);
     setGameScore(null);
 	};
 
@@ -124,6 +138,7 @@ const Battles = ({
             {!start ? (
               <>
                 <div className="p2p_block_left">
+                  <div className="subtitle">{`You have ${playerLimit} game for today`}</div>
                   <div className="subtitle">Your team for match</div>
                   {gamePlayers && gamePlayers.map((player, index) => (
                     <div className="p2p_position_block" key={player.id}>
@@ -147,6 +162,13 @@ const Battles = ({
                 </div>
                 <div className="p2p_block_right">
                   <img src="./img/map.png" alt="" />
+                  <input
+                    placeholder="Your bet"
+                    type="text"
+                    value={betAmount}
+                    onChange={(e) => setBetAmount(e.target.value)}
+                    style={{ width: 'calc(100% - 30px)', margin: '10px 0 0 0', height: 53 }}
+                  />
                   <div
                     className="btn"
                     onClick={() => gamePlayers.length === 5 ? onStart() : ''}
@@ -179,7 +201,7 @@ const Battles = ({
                       <div className="p2p_rewards">
                         <div>
                           <img src="./img/goal.png" alt="" />
-                          {gameScore.score === 1 ? <span>{`+ ${gameScore.sum}`}</span> : <span>{`- ${gameScore.sum}`}</span>}
+                          {gameScore.score === 1 ? <span>{`+ ${betAmount}`}</span> : <span>{`- ${betAmount}`}</span>}
                         </div>
                       </div>
                     )}
