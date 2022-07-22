@@ -312,7 +312,7 @@ select {
     text-align: center;
     border: 0px;
     font-weight: 400;
-    border-radius: 6px;
+    border-radius: 12px;
     font-family: 'Sora', sans-serif;
     box-shadow: 0 20px 92px rgb(62 77 229 / 40%);
 }

@@ -46,7 +46,7 @@ const App = () => {
     PlayersV4: 'TBpkDAhepL9FPtdP5mVGETqUN5gn8z6g9o',
     BallV2: 'TMSE87jKvR2SWKG2sWLoBDrZy32atjJHzV',
     GoalV2:  'TTMgs4mYh1MMSpTAutfQCRuBCPx1LZ3gBp',
-    FootballGame: 'TXywmA9nboJbKugcnrkjcvYcJJmXWFkH4j',
+    FootballGame: 'THi4RtUs5qRsG7k7yP7Uv5XoHFdDyzXJpW',
   });
   const [account, setAccount] = useState(null);
   const [claimedBalls, setClaimedBalls] = useState(0);
