@@ -151,7 +151,7 @@ const Academy = ({
                       <div className="team_player_position">{player.position}</div>
                       <div className="team_player_name">{`${player.name} (Rating: ${player.rating})`}</div>
                       <div className="team_player_btn">
-                        {myStakedPlayers.indexOf(Number(player.id)) !== -1 ? (
+                        {myStakedPlayers.indexOf(player.id) !== -1 ? (
                           <div
                             className="btn"
                             onClick={() => onUnstake(player.id)}
@@ -211,7 +211,7 @@ const Academy = ({
               </div>
               <div className="banner_content">
                 <div className="team_block">
-                  {myPlayers && myPlayers.map((player) => (myStakedPlayers.indexOf(Number(player.id)) !== -1 && (
+                  {myPlayers && myPlayers.map((player) => (myStakedPlayers.indexOf(player.id) !== -1 && (
                     <div className="team_player_block" key={player.id}>
                       <img src={player.src} alt="" />
                       <div className="team_player_number">{`NO. ${player.id}`}</div>

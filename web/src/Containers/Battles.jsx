@@ -218,7 +218,7 @@ const Battles = ({
                       <span>Rating</span>
                       {` ${player.rating}`}
                     </div>
-                    {myStakedPlayers.indexOf(Number(player.id)) === -1 ? (
+                    {myStakedPlayers.indexOf(player.id) === -1 ? (
                       <div
                         className="btn"
                         onClick={() => gamePlayers.length < 5 ? onSelectPlayer(player) : ''}

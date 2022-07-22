@@ -60,7 +60,7 @@ const Home = ({
           </div>
           <div className="cards_list">
             <div className="cards_list_inner">
-              {myPlayers && myPlayers.map((player, index) => (player.name.toLowerCase().indexOf(filter.toLocaleLowerCase()) !== -1 && (
+              {myPlayers && myPlayers.map((player) => (player.name.toLowerCase().indexOf(filter.toLocaleLowerCase()) !== -1 && (
                 <div className="card" key={player.id}>
                   <img src={player.src} alt="" />
                   <div className="card_content">
