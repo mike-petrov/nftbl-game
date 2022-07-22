@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Academy = ({
@@ -18,6 +18,8 @@ const Academy = ({
   myStakedBalls,
   onInit,
 }) => {
+  const [ballsAmount, setBallsAmount] = useState(0);
+
   const onStake = (id) => {
     contracts.BallV2.stake([id]).send().then(() => {
       setTimeout(() => {
@@ -73,12 +75,16 @@ const Academy = ({
 	};
 
   const onStakeBalls = () => {
-    contracts.GoalV2.staking(window.tronLink.tronWeb.toHex(tokens.balls)).send().then(() => {
-      setTimeout(() => {
-        onPopup('success', 'Your Balls was staked');
-        onInit();
-      }, 2000);
-    });
+    if (ballsAmount > 0 && ballsAmount <= tokens.balls) {
+      contracts.GoalV2.staking(window.tronLink.tronWeb.toHex(ballsAmount)).send().then(() => {
+        setTimeout(() => {
+          onPopup('success', 'Your Balls was staked');
+          onInit();
+        }, 2000);
+      });
+    } else {
+      onPopup('error', 'Wrong Balls amount');
+    }
 	};
 
   const onUnstakeBalls = () => {
@@ -189,12 +195,27 @@ const Academy = ({
                   >Claim</div>
                 </span>
               </div>
-              <div className="banner_content" style={{ display: 'flex', justifyContent: 'center' }}>
+              <div
+                className="banner_content"
+                style={{
+                  display: 'flex',
+                  justifyContent: 'center',
+                  flexDirection: 'column',
+                  maxWidth: 350,
+                }}
+              >
+                <input
+                  placeholder="Your bet"
+                  type="text"
+                  value={ballsAmount}
+                  onChange={(e) => setBallsAmount(e.target.value)}
+                  style={{ width: 'calc(100% - 40px)', margin: '0 5px 5px 5px', height: 53 }}
+                />
                 <div
                   className="btn"
                   onClick={() => onStakeBalls()}
                   style={tokens.balls === 0 ? { pointerEvents: 'none', opacity: 0.6 } : {}}
-                >Stake All Balls</div>
+                >Stake Balls</div>
                 <div
                   className="btn"
                   onClick={() => onUnstakeBalls()}
