@@ -1,4 +1,4 @@
-# NFTBL
+![intro](/images/intro.png)
 
 ## Overview
 
@@ -20,5 +20,11 @@ Web3 NFT Football Management game-changing decentralized application with Smart 
 - P2P matches since release
 - High-throughput Tron blockchain
 - Easy to start for non-crypto gamers 
+
+## Tokenomics
+![intro](/images/tokenomics.png)
+
+## Roadmap
+![intro](/images/roadmap.png)
 
 [Tron 2022 Hackathon Project](https://tron.devpost.com/)
