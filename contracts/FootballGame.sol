@@ -2,22 +2,34 @@
 pragma solidity ^0.8.0;
 
 import "./PlayersV4.sol";
+import "./BallV2.sol";
 
 contract FootballGame {
 
     PlayersV4 public players;
+    BallV2 public ballContract;
 
-    constructor(PlayersV4 _players) {
+    constructor(PlayersV4 _players, BallV2 _ballContract) {
         players = _players;
+        ballContract = _ballContract;
     }
 
     enum MatchResult{Draw, AttackerWin, AttackerLose}
 
     event MatchHappened(uint attackerId, uint defenderId, MatchResult result);
 
-    function play(uint myId, uint opponentId) external  returns(MatchResult result){
-        require(opponentId < players.totalSupply(), "wrong opponent id");
+    mapping (uint => EnergyInfo) energy;
+
+    struct EnergyInfo{
+        uint128 lastTimestamp;
+        uint128 lastAmount;
+    }
+
+    function play(uint myId, uint betAmount) external returns(MatchResult result){
         require(players.ownerOf(myId) == msg.sender, "wrong my id");
+        require(ballContract.balanceOf(msg.sender) >= betAmount, "not enough BALLS for bet");
+
+        uint opponentId = uint256(keccak256(abi.encode(block.timestamp, block.number))) % players.totalSupply();
 
         (, , , , , , , uint256 myLvl) = players.allPlayers(myId);
         (, , , , , , , uint256 opponentLvl) = players.allPlayers(opponentId);
@@ -28,10 +40,29 @@ contract FootballGame {
         if(myPoints > opponentPoints) result = MatchResult.AttackerWin;
         if(myPoints < opponentPoints) result = MatchResult.AttackerLose;
 
+        EnergyInfo memory info = energy[myId];
+        info.lastAmount = getEnergy(myId) - 10;
+        info.lastTimestamp = uint128(block.timestamp);
+        energy[myId] = info;
+
+        if(result == MatchResult.AttackerWin){
+            ballContract.mintBall(msg.sender, betAmount);
+        }
+        if(result == MatchResult.AttackerLose){
+            ballContract.burnBalls(msg.sender, betAmount);
+        }
+
         emit MatchHappened(myId, opponentId, result);
     }
 
-    function log2(uint x) pure public returns (uint y){
+    function getEnergy(uint id) public view returns(uint128 amount){
+        amount = energy[id].lastAmount + (uint128(block.timestamp) - energy[id].lastTimestamp)/864;
+        if(amount > 100) {
+            amount = 100;
+        }
+    }
+
+    function log2(uint x) pure private returns (uint y){
         assembly {
             let arg := x
             x := sub(x,1)
