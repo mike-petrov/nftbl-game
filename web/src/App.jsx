@@ -48,6 +48,8 @@ const App = () => {
     GoalV2:  'TTMgs4mYh1MMSpTAutfQCRuBCPx1LZ3gBp',
     FootballGame: 'THi4RtUs5qRsG7k7yP7Uv5XoHFdDyzXJpW',
   });
+  const [isLoadingBalls, setLoadingBalls] = useState(false);
+  const [isLoadingGoals, setLoadingGoals] = useState(false);
   const [account, setAccount] = useState(null);
   const [claimedBalls, setClaimedBalls] = useState(0);
   const [claimedGoals, setClaimedGoals] = useState(0);
@@ -211,14 +213,22 @@ const App = () => {
 	};
 
   const onGetClaimedBalles = (contractsTemp = contracts) => {
+    setLoadingBalls(true);
     contractsTemp.BallV2.myClaimableView().call().then((claimedBallsTemp) => {
       setClaimedBalls(Number(claimedBallsTemp._hex));
+      setTimeout(() => {
+        setLoadingBalls(false);
+      }, 1000);
     });
 	};
 
   const onGetClaimedGoals = (accountTemp = account, contractsTemp = contracts) => {
+    setLoadingGoals(true);
     contractsTemp.GoalV2.claimableView(accountTemp.address).call().then((claimedGoalsTemp) => {
       setClaimedGoals(Number(claimedGoalsTemp._hex));
+      setTimeout(() => {
+        setLoadingGoals(false);
+      }, 1000);
     });
 	};
 
@@ -360,6 +370,8 @@ const App = () => {
               setMyStakedPlayers={setMyStakedPlayers}
               onBalance={onBalance}
               onInit={onInit}
+              isLoadingBalls={isLoadingBalls}
+              isLoadingGoals={isLoadingGoals}
             />}
           />
           <Route
