@@ -17,8 +17,10 @@ const Academy = ({
   setMyStakedPlayers,
   myStakedBalls,
   onInit,
+  isLoadingBalls,
+  isLoadingGoals,
 }) => {
-  const [ballsAmount, setBallsAmount] = useState(0);
+  const [ballsAmount, setBallsAmount] = useState(0.01);
 
   const onStake = (id) => {
     contracts.BallV2.stake([id]).send().then(() => {
@@ -45,14 +47,14 @@ const Academy = ({
 	};
 
   const onUpgrade = (id) => {
-    if (tokens.goals > 1000000000000000000) {
+    if (Number((tokens.goals / 1e+18).toFixed(2)) >= 0.01) {
       contracts.GoalV2.upgradePlayer(id, 1).send().then(() => {
         setTimeout(() => {
           onPopup('success', 'This player was upgraded');
         }, 2000);
       });
     } else {
-      onPopup('error', `Not enough Goals for upgrade. Needs more: ${1000000000000000000 - tokens.goals})`);
+      onPopup('error', `Not enough Goals for upgrade. Needs more than 0.01)`);
     }
 	};
 
@@ -75,8 +77,8 @@ const Academy = ({
 	};
 
   const onStakeBalls = () => {
-    if (ballsAmount > 0 && ballsAmount <= tokens.balls) {
-      contracts.GoalV2.staking(window.tronLink.tronWeb.toHex(ballsAmount)).send().then(() => {
+    if (ballsAmount >= 0.01 && ballsAmount <= Number((tokens.balls / 1e+18).toFixed(2))) {
+      contracts.GoalV2.staking(window.tronLink.tronWeb.toHex(ballsAmount * 1e+18)).send().then(() => {
         setTimeout(() => {
           onPopup('success', 'Your Balls was staked');
           onInit();
@@ -106,11 +108,11 @@ const Academy = ({
               <div>
                 <span style={{ background: '#3e4de5', display: 'flex', alignItems: 'center' }}>
                   <img src="./img/ball.png" alt="" />
-                  <span>{tokens.balls}</span>
+                  <span>{(tokens.balls / 1e+18).toFixed(2)}</span>
                 </span>
                 <span style={{ background: '#3e4de5', display: 'flex', alignItems: 'center' }}>
                   <img src="./img/goal.png" alt="" />
-                  <span>{tokens.goals}</span>
+                  <span>{(tokens.goals / 1e+18).toFixed(2)}</span>
                 </span>
               </div>
               <div>
@@ -135,16 +137,17 @@ const Academy = ({
                 <span>{`1. Staking players (${myStakedPlayers.filter((stakedPlayer) => stakedPlayer > 0).length} / ${myPlayers.length})`}</span>
                 <span>
                   <img src="./img/ball.png" alt="" />
-                  {claimedBalls}
+                  {(claimedBalls / 1e+18).toFixed(2)}
                   <FontAwesomeIcon
                     icon={['fas', 'rotate']}
-                    style={{ cursor: 'pointer', marginLeft: 10 }}
+                    spin={isLoadingBalls}
+                    style={isLoadingBalls ? { cursor: 'pointer', marginLeft: 10, pointerEvents: 'none' } : { cursor: 'pointer', marginLeft: 10 }}
                     onClick={() => onGetClaimedBalles()}
                   />
                   <div
                     className="btn"
                     onClick={onClaimBalls}
-                    style={claimedBalls === 0 ? { pointerEvents: 'none', opacity: 0.6 } : {}}
+                    style={Number((claimedBalls / 1e+18).toFixed(2)) < 0.01 ? { pointerEvents: 'none', opacity: 0.6 } : {}}
                   >Claim</div>
                 </span>
               </div>
@@ -178,20 +181,21 @@ const Academy = ({
               <div className="banner_title">
                 <span>
                   {`2. Staking balls `}
-                  <span style={{ fontSize: 14 }}>{`(${myStakedBalls} / ${myStakedBalls + tokens.balls})`}</span>
+                  <span style={{ fontSize: 14 }}>{`(${(myStakedBalls / 1e+18).toFixed(2)} / ${(Number((myStakedBalls / 1e+18).toFixed(2)) + Number((tokens.balls / 1e+18).toFixed(2))).toFixed(2)})`}</span>
                 </span>
                 <span>
                   <img src="./img/goal.png" alt="" />
-                  {claimedGoals}
+                  {(claimedGoals / 1e+18).toFixed(2)}
                   <FontAwesomeIcon
                     icon={['fas', 'rotate']}
-                    style={{ cursor: 'pointer', marginLeft: 10 }}
+                    spin={isLoadingGoals}
+                    style={isLoadingGoals ? { cursor: 'pointer', marginLeft: 10, pointerEvents: 'none' } : { cursor: 'pointer', marginLeft: 10 }}
                     onClick={() => onGetClaimedGoals()}
                   />
                   <div
                     className="btn"
                     onClick={onClaimGoals}
-                    style={claimedGoals === 0 ? { pointerEvents: 'none', opacity: 0.6 } : {}}
+                    style={Number((claimedGoals / 1e+18).toFixed(2)) < 0.01 ? { pointerEvents: 'none', opacity: 0.6 } : {}}
                   >Claim</div>
                 </span>
               </div>
@@ -205,7 +209,6 @@ const Academy = ({
                 }}
               >
                 <input
-                  placeholder="Your bet"
                   type="text"
                   value={ballsAmount}
                   onChange={(e) => setBallsAmount(e.target.value)}
@@ -214,12 +217,12 @@ const Academy = ({
                 <div
                   className="btn"
                   onClick={() => onStakeBalls()}
-                  style={tokens.balls === 0 ? { pointerEvents: 'none', opacity: 0.6 } : {}}
+                  style={Number((tokens.balls / 1e+18).toFixed(2)) < 0.01 ? { pointerEvents: 'none', opacity: 0.6 } : {}}
                 >Stake Balls</div>
                 <div
                   className="btn"
                   onClick={() => onUnstakeBalls()}
-                  style={myStakedBalls === 0 ? { pointerEvents: 'none', opacity: 0.6 } : {}}
+                  style={Number((myStakedBalls / 1e+18).toFixed(2)) < 0.01 ? { pointerEvents: 'none', opacity: 0.6 } : {}}
                 >Unstake All Balls</div>
               </div>
             </div>

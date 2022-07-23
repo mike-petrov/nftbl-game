@@ -25,11 +25,11 @@ const Home = ({
               <div>
                 <span style={{ background: '#3e4de5', display: 'flex', alignItems: 'center' }}>
                   <img src="./img/ball.png" alt="" />
-                  <span>{tokens.balls}</span>
+                  <span>{(tokens.balls / 1e+18).toFixed(2)}</span>
                 </span>
                 <span style={{ background: '#3e4de5', display: 'flex', alignItems: 'center' }}>
                   <img src="./img/goal.png" alt="" />
-                  <span>{tokens.goals}</span>
+                  <span>{(tokens.goals / 1e+18).toFixed(2)}</span>
                 </span>
               </div>
               <div>

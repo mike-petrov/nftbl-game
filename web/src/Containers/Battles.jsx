@@ -5,7 +5,6 @@ import Pizzicato from 'pizzicato';
 
 const Battles = ({
     account,
-    players,
     myPlayers,
     tokens,
     contracts,
@@ -15,14 +14,14 @@ const Battles = ({
     onPopup,
   }) => {
   const [playerLimit, setPlayerLimit] = useState(0);
-  const [betAmount, setBetAmount] = useState(0);
+  const [betAmount, setBetAmount] = useState(0.01);
   const [gamePlayers, setGamePlayers] = useState([]);
   const [start, setStart] = useState(false);
   const [gameScore, setGameScore] = useState(null);
 
 
   useEffect(() => {
-    if (typeof contracts.FootballGame !== 'string' && betAmount !== 0) {
+    if (typeof contracts.FootballGame !== 'string' && playerLimit === 0) {
       contracts.FootballGame.getEnergy(1).call().then((playerHex) => {
         setPlayerLimit(Number(playerHex._hex) / 10);
       });
@@ -48,10 +47,10 @@ const Battles = ({
 	};
 
   const onStart = () => {
-    if (betAmount > 0 && betAmount <= tokens.balls) {
+    if (betAmount >= 0.01 && betAmount <= Number((tokens.balls / 1e+18).toFixed(2))) {
       contracts.FootballGame.players().call().then((playerHex) => {
         // const address = window.tronLink.tronWeb.address.fromHex(playerHex);
-        contracts.FootballGame.play(1, betAmount).send().then((resultGame) => {
+        contracts.FootballGame.play(1, window.tronLink.tronWeb.toHex(betAmount * 1e+18)).send().then((resultGame) => {
           setStart(true);
           const checkEvent = setInterval(() => {
             fetch(`https://api.shasta.trongrid.io/v1/transactions/${resultGame}/events`, {
@@ -73,12 +72,12 @@ const Battles = ({
                   if (attackerScore <= defenderScore) {
                     attackerScore = Math.ceil(Math.random() * (5 - defenderScore + 1) + defenderScore + 1);
                   }
-                  setTokens({...tokens, balls: tokens.balls + betAmount });
+                  setTokens({...tokens, balls: tokens.balls + (betAmount * 1e+18) });
                 } else if (response.data[0].result.result === '2') {
                   if (defenderScore <= attackerScore) {
                     defenderScore = Math.ceil(Math.random() * (5 - attackerScore + 1) + attackerScore + 1);
                   }
-                  setTokens({...tokens, balls: tokens.balls - betAmount });
+                  setTokens({...tokens, balls: tokens.balls - (betAmount * 1e+18) });
                 } else {
                   attackerScore = defenderScore;
                 }
@@ -114,11 +113,11 @@ const Battles = ({
               <div>
                 <span style={{ background: '#3e4de5', display: 'flex', alignItems: 'center' }}>
                   <img src="./img/ball.png" alt="" />
-                  <span>{tokens.balls}</span>
+                  <span>{(tokens.balls / 1e+18).toFixed(2)}</span>
                 </span>
                 <span style={{ background: '#3e4de5', display: 'flex', alignItems: 'center' }}>
                   <img src="./img/goal.png" alt="" />
-                  <span>{tokens.goals}</span>
+                  <span>{(tokens.goals / 1e+18).toFixed(2)}</span>
                 </span>
               </div>
               <div>
