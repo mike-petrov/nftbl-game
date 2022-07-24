@@ -484,26 +484,6 @@ select {
     width: 20%;
 }
 
-.p2p_position_block {
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    padding: 20px;
-    background: #1c1c1c;
-    border-radius: 16px;
-    margin-top: 10px;
-}
-
-.p2p_position_name {
-    font-size: 16px;
-    font-weight: 400;
-}
-
-.p2p_position_clear {
-    cursor: pointer;
-    color: #e74c3c;
-}
-
 .p2p_result {
     width: 100%;
     border: 1px dashed #3e4de5;
@@ -533,6 +513,14 @@ select {
     border-radius: 12px 0 0 12px;
     margin: 0;
     width: 5%;
+}
+
+.p2p_block_left .team_player_block img {
+    width: 7%;
+}
+
+.p2p_block_left .team_player_btn {
+    width: 15%;
 }
 
 .team_player_number {

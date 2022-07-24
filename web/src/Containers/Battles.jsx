@@ -136,20 +136,25 @@ const Battles = ({
             {!start ? (
               <>
                 <div className="p2p_block_left">
-                  <div className="subtitle">{`You have ${playerLimit} game for today`}</div>
-                  <div className="subtitle">Your team for match</div>
-                  {gamePlayers && gamePlayers.map((player, index) => (
-                    <div className="p2p_position_block" key={player.id}>
-                      <div className="p2p_position_name">{player.position}</div>
-                      <div className="p2p_position_player">{`${player.name} (Rating: ${player.rating})`}</div>
-                      <div className="p2p_position_clear">
-                        <FontAwesomeIcon
-                          icon={['fas', 'times']}
-                          onClick={() => onRemovePlayer(index)}
-                        />
+                  <div className="team_block">
+                    <div className="subtitle">{`You have ${playerLimit} game for today`}</div>
+                    <div className="subtitle">Your team for match</div>
+                    {gamePlayers && gamePlayers.map((player, index) => (
+                      <div className="team_player_block" key={player.id} style={{ background: '#1c1c1c' }}>
+                        <img src={player.src} alt="" />
+                        <div className="team_player_number">{`NO. ${player.id}`}</div>
+                        <div className="team_player_position">{player.position}</div>
+                        <div className="team_player_name">{`${player.name} (Rating: ${player.rating})`}</div>
+                        <div className="team_player_btn">
+                          <div
+                            className="btn"
+                            onClick={() => onRemovePlayer(index)}
+                            style={{ background: '#e74c3c'}}
+                          >Remove</div>
+                        </div>
                       </div>
-                    </div>
-                  ))}
+                    ))}
+                  </div>
                   {gamePlayers.length < 5 && (
                     <div
                       className="btn"
@@ -169,13 +174,12 @@ const Battles = ({
                   />
                   <div
                     className="btn"
-                    onClick={onStart}
-                    // onClick={() => gamePlayers.length === 5 ? onStart() : ''}
+                    onClick={() => gamePlayers.length === 5 ? onStart() : ''}
                     style={gamePlayers.length === 5 ? {
                       margin: '10px 0 0 0'
                     } : {
                       margin: '10px 0 0 0',
-                      // pointerEvents: 'none',
+                      pointerEvents: 'none',
                       opacity: 0.5,
                       cursor: 'default',
                     }}
