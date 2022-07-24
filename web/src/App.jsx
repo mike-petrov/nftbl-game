@@ -21,6 +21,9 @@ import {
 import {
     faHeart,
 } from '@fortawesome/free-regular-svg-icons';
+import {
+    faDiscord,
+} from '@fortawesome/free-brands-svg-icons';
 import Players from './players.jsx';
 import './App.css';
 
@@ -32,6 +35,7 @@ library.add(
   faLink,
   faCheck,
   faRotate,
+  faDiscord,
 );
 
 // const TronWeb = require('tronweb');
@@ -341,6 +345,9 @@ const App = () => {
           </Link>
         </div>
         <div className="sidebar_block sidebar_block_bottom">
+          <a className="discord_block" href="https://discord.com/invite/#" target="_blank" rel="noopener noreferrer">
+            <FontAwesomeIcon icon={['fab', 'discord']} />Join Discord Community!
+          </a>
           <div className="subtitle" style={{ fontSize: 12 }}>Made for Tron 2022</div>
         </div>
       </div>

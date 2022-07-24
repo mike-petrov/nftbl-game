@@ -273,6 +273,21 @@ select {
     margin: 10px auto;
 }
 
+.discord_block {
+    display: block;
+    font-size: 12px;
+    color: #fff;
+    background: #00bea8;
+    background: linear-gradient(63deg, #ff39f8, #2c84ff);
+    border-radius: 14px;
+    padding: 15px;
+    margin: 10px 5px 20px;
+}
+
+.discord_block svg {
+    margin-right: 5px;
+}
+
 .stat_block {
     width: calc(50% - 40px);
     margin: 20px;
