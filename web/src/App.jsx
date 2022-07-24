@@ -48,6 +48,8 @@ const App = () => {
     GoalV2:  'TTMgs4mYh1MMSpTAutfQCRuBCPx1LZ3gBp',
     FootballGame: 'THi4RtUs5qRsG7k7yP7Uv5XoHFdDyzXJpW',
   });
+  const [isInit, setInit] = useState(false);
+  const [isInitAcademy, setInitAcademy] = useState(false);
   const [isLoadingBalls, setLoadingBalls] = useState(false);
   const [isLoadingGoals, setLoadingGoals] = useState(false);
   const [account, setAccount] = useState(null);
@@ -74,9 +76,7 @@ const App = () => {
         if (e.data.message.data.data.isAuth) {
           setAccount(e.data.message.data.data);
           setTimeout(() => {
-            onABI().then((contractsTemp) => {
-              onInit(e.data.message.data.data, contractsTemp);
-            });
+            onActivateContracts();
           }, 1000);
         }
       }
@@ -121,9 +121,7 @@ const App = () => {
         if (e.data.message.data.data.isAuth) {
           setAccount(e.data.message.data.data);
           setTimeout(() => {
-            onABI().then((contractsTemp) => {
-              onInit(e.data.message.data.data, contractsTemp);
-            });
+            onActivateContracts();
           }, 1000);
         }
         console.log("acceptWeb event", e.data.message);
@@ -140,7 +138,16 @@ const App = () => {
     });
   }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
-  const onABI = async () => {
+
+  const onPopup = (current = null, item = null) => {
+		setPopup({ current, item });
+	};
+
+  const onConnect = async () => {
+    await window.tronLink.request({method: 'tron_requestAccounts'});
+	};
+
+  const onActivateContracts = async () => {
     const PlayersV4 = await window.tronLink.tronWeb.contract().at(contracts.PlayersV4);
     const BallV2 = await window.tronLink.tronWeb.contract().at(contracts.BallV2);
     const GoalV2 = await window.tronLink.tronWeb.contract().at(contracts.GoalV2);
@@ -152,69 +159,53 @@ const App = () => {
       FootballGame,
     };
     setContracts(contractsTemp);
-    return contractsTemp;
 	};
 
-  const onInit = (accountTemp = account, contractsTemp = contracts) => {
+  useEffect(() => {
+    if (typeof contracts.FootballGame !== 'string' && !isInit) {
+      setInit(true);
+
+      onGetMyPlayers();
+      onGetMyStakedPlayers();
+      onBalance();
+    }
+  }, [contracts]); // eslint-disable-line react-hooks/exhaustive-deps
+
+  const onGetMyPlayers = () => {
     setMyPlayers([]);
-    contractsTemp.PlayersV4.balanceOf(accountTemp.address).call().then((playersCount) => {
+    contracts.PlayersV4.balanceOf(account.address).call().then((playersCount) => {
       for (let i = 0; i < Number(playersCount._hex); i += 1) {
-        contractsTemp.PlayersV4.tokenOfOwnerByIndex(accountTemp.address, i).call().then((player) => {
-          setMyPlayers((myPlayersTemp) => [ ...myPlayersTemp, { ...players[Number(player._hex) - 1], isStake: false }]);
-        });
+        setTimeout(() => {
+          contracts.PlayersV4.tokenOfOwnerByIndex(account.address, i).call().then((player) => {
+            setMyPlayers((myPlayersTemp) => [ ...myPlayersTemp, { ...players[Number(player._hex) - 1], isStake: false }]);
+          });
+        }, 10);
       }
     });
+	};
 
-    contractsTemp.BallV2.myStakedPlayers().call().then((stakedPlayers) => {
+  const onGetMyStakedPlayers = () => {
+    contracts.BallV2.myStakedPlayers().call().then((stakedPlayers) => {
       const array = stakedPlayers.map((player) => Number(player._hex));
       // for (let i = 0; i < array.length; i += 1) {
-      //   contractsTemp.BallV2.stakedPlayers(i).call().then((stakedPlayerInfo) => {
+      //   contracts.BallV2.stakedPlayers(i).call().then((stakedPlayerInfo) => {
       //     console.log('!', stakedPlayerInfo.eatenAmount);
       //     setMyStakedPlayersLvls((myStakedPlayersLvlsTemp) => [ ...myStakedPlayersLvlsTemp, stakedPlayerInfo.eatenAmount]);
       //   });
       // }
       setMyStakedPlayers(array);
     });
+	};
 
-    contractsTemp.GoalV2.totalBallStaked().call().then((stakedBalls) => {
+  const onGetMyStakedBalls = () => {
+    contracts.GoalV2.totalBallStaked().call().then((stakedBalls) => {
       setMyStakedBalls(Number(stakedBalls._hex));
     });
-
-    onGetClaimedBalles(contractsTemp);
-
-    onGetClaimedGoals(accountTemp, contractsTemp);
-
-    onBalance(accountTemp, contractsTemp);
 	};
 
-  const onPopup = (current = null, item = null) => {
-		setPopup({ current, item });
-	};
-
-  const onConnect = async () => {
-    await window.tronLink.request({method: 'tron_requestAccounts'});
-	};
-
-  const onExit = () => {
-    setMyPlayers([]);
-    setAccount(null);
-    document.location.href = '/';
-	};
-
-  const onBalance = (accountTemp = account, contractsTemp = contracts) => {
-    contractsTemp.BallV2.balanceOf(accountTemp.address).call().then((balanceOfBalls) => {
-      contractsTemp.GoalV2.balanceOf(accountTemp.address).call().then((balanceOfGoals) => {
-        setTokens({
-          balls: Number(balanceOfBalls._hex),
-          goals: Number(balanceOfGoals._hex),
-        });
-      });
-    });
-	};
-
-  const onGetClaimedBalles = (contractsTemp = contracts) => {
+  const onGetClaimedBalls = () => {
     setLoadingBalls(true);
-    contractsTemp.BallV2.myClaimableView().call().then((claimedBallsTemp) => {
+    contracts.BallV2.myClaimableView().call().then((claimedBallsTemp) => {
       setClaimedBalls(Number(claimedBallsTemp._hex));
       setTimeout(() => {
         setLoadingBalls(false);
@@ -222,14 +213,33 @@ const App = () => {
     });
 	};
 
-  const onGetClaimedGoals = (accountTemp = account, contractsTemp = contracts) => {
+  const onGetClaimedGoals = () => {
     setLoadingGoals(true);
-    contractsTemp.GoalV2.claimableView(accountTemp.address).call().then((claimedGoalsTemp) => {
+    contracts.GoalV2.claimableView(account.address).call().then((claimedGoalsTemp) => {
       setClaimedGoals(Number(claimedGoalsTemp._hex));
       setTimeout(() => {
         setLoadingGoals(false);
       }, 1000);
     });
+	};
+
+  const onBalance = () => {
+    contracts.BallV2.balanceOf(account.address).call().then((balanceOfBalls) => {
+      setTimeout(() => {
+        contracts.GoalV2.balanceOf(account.address).call().then((balanceOfGoals) => {
+          setTokens({
+            balls: Number(balanceOfBalls._hex),
+            goals: Number(balanceOfGoals._hex),
+          });
+        });
+      }, 500);
+    });
+	};
+
+  const onExit = () => {
+    setMyPlayers([]);
+    setAccount(null);
+    document.location.href = '/';
 	};
 
   return (
@@ -345,7 +355,6 @@ const App = () => {
               onConnect={onConnect}
               tokens={tokens}
               myPlayers={myPlayers}
-              onBalance={onBalance}
             />}
           />
           <Route
@@ -355,23 +364,23 @@ const App = () => {
               onPopup={onPopup}
               account={account}
               onExit={onExit}
-              onGetClaimedBalles={onGetClaimedBalles}
+              onGetClaimedBalls={onGetClaimedBalls}
               onGetClaimedGoals={onGetClaimedGoals}
               claimedGoals={claimedGoals}
               claimedBalls={claimedBalls}
               onConnect={onConnect}
               tokens={tokens}
-              setClaimedBalls={setClaimedBalls}
-              setClaimedGoals={setClaimedGoals}
               myPlayers={myPlayers}
               myStakedPlayers={myStakedPlayers}
               myStakedBalls={myStakedBalls}
               contracts={contracts}
               setMyStakedPlayers={setMyStakedPlayers}
               onBalance={onBalance}
-              onInit={onInit}
               isLoadingBalls={isLoadingBalls}
               isLoadingGoals={isLoadingGoals}
+              onGetMyStakedBalls={onGetMyStakedBalls}
+              isInitAcademy={isInitAcademy}
+              setInitAcademy={setInitAcademy}
             />}
           />
           <Route
@@ -380,7 +389,6 @@ const App = () => {
             element={<Battles
               onPopup={onPopup}
               account={account}
-              players={players}
               myPlayers={myPlayers}
               myStakedPlayers={myStakedPlayers}
               tokens={tokens}
@@ -396,12 +404,9 @@ const App = () => {
               onPopup={onPopup}
               account={account}
               onExit={onExit}
-              players={players}
               tokens={tokens}
-              setMyPlayers={setMyPlayers}
-              myPlayers={myPlayers}
               contracts={contracts}
-              onInit={onInit}
+              onGetMyPlayers={onGetMyPlayers}
             />}
           />
         </Routes>

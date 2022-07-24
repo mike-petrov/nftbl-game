@@ -3,18 +3,17 @@ import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Marketplace = ({
     onPopup,
-    players,
     account,
     tokens,
     onExit,
     contracts,
-    onInit,
+    onGetMyPlayers,
   }) => {
   const onBuy = (amount) => {
     contracts.PlayersV4.mint(amount).send().then((mintTemp) => {
       setTimeout(() => {
         onPopup('success', 'Your team has been replenished with new players');
-        onInit();
+        onGetMyPlayers();
       }, 2000);
     });
 	};

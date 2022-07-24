@@ -19,15 +19,13 @@ const Battles = ({
   const [start, setStart] = useState(false);
   const [gameScore, setGameScore] = useState(null);
 
-
   useEffect(() => {
     if (typeof contracts.FootballGame !== 'string' && playerLimit === 0) {
       contracts.FootballGame.getEnergy(1).call().then((playerHex) => {
-        setPlayerLimit(Number(playerHex._hex) / 10);
+        setPlayerLimit(Math.floor(Number(playerHex._hex) / 10));
       });
     }
   }, [contracts]); // eslint-disable-line react-hooks/exhaustive-deps
-
 
   const onScroll = () => {
     const scrollDiv = document.getElementById("scroll_anchor").offsetTop - 111;
@@ -49,7 +47,6 @@ const Battles = ({
   const onStart = () => {
     if (betAmount >= 0.01 && betAmount <= Number((tokens.balls / 1e+18).toFixed(2))) {
       contracts.FootballGame.players().call().then((playerHex) => {
-        // const address = window.tronLink.tronWeb.address.fromHex(playerHex);
         contracts.FootballGame.play(1, window.tronLink.tronWeb.toHex(betAmount * 1e+18)).send().then((resultGame) => {
           setStart(true);
           const checkEvent = setInterval(() => {

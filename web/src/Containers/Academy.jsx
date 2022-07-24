@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
 
 const Academy = ({
@@ -6,7 +6,7 @@ const Academy = ({
   myPlayers,
   claimedBalls,
   claimedGoals,
-  onGetClaimedBalles,
+  onGetClaimedBalls,
   onGetClaimedGoals,
   myStakedPlayers,
   account,
@@ -16,10 +16,24 @@ const Academy = ({
   contracts,
   setMyStakedPlayers,
   myStakedBalls,
-  onInit,
   isLoadingBalls,
   isLoadingGoals,
+  onBalance,
+  isInitAcademy,
+  setInitAcademy,
+  onGetMyStakedBalls,
 }) => {
+  useEffect(() => {
+    if (typeof contracts.FootballGame !== 'string' && !isInitAcademy) {
+      setInitAcademy(true);
+  
+      onGetMyStakedBalls();
+      onGetClaimedBalls();
+      onGetClaimedGoals();
+    }
+  }, [contracts]); // eslint-disable-line react-hooks/exhaustive-deps
+
+
   const [ballsAmount, setBallsAmount] = useState(0.01);
 
   const onStake = (id) => {
@@ -62,7 +76,8 @@ const Academy = ({
     contracts.BallV2.claimBalls(myPlayers.map((player) => player.id)).send().then(() => {
       setTimeout(() => {
         onPopup('success', 'Claimed Balls success');
-        onInit();
+        onGetClaimedBalls();
+        onBalance();
       }, 2000);
     });
 	};
@@ -71,7 +86,8 @@ const Academy = ({
     contracts.GoalV2.claimGoal().send().then(() => {
       setTimeout(() => {
         onPopup('success', 'Claimed Goals success');
-        onInit();
+        onGetClaimedGoals();
+        onBalance();
       }, 2000);
     });
 	};
@@ -81,7 +97,8 @@ const Academy = ({
       contracts.GoalV2.staking(window.tronLink.tronWeb.toHex(ballsAmount * 1e+18)).send().then(() => {
         setTimeout(() => {
           onPopup('success', 'Your Balls was staked');
-          onInit();
+          onGetMyStakedBalls();
+          onBalance();
         }, 2000);
       });
     } else {
@@ -93,7 +110,9 @@ const Academy = ({
     contracts.GoalV2.withdrawAllBallsAndClaimGoal().send().then(() => {
       setTimeout(() => {
         onPopup('success', 'Your Balls was received');
-        onInit();
+        onGetMyStakedBalls();
+        onGetClaimedBalls();
+        onBalance();
       }, 3000);
     });
 	};
@@ -142,7 +161,7 @@ const Academy = ({
                     icon={['fas', 'rotate']}
                     spin={isLoadingBalls}
                     style={isLoadingBalls ? { cursor: 'pointer', marginLeft: 10, pointerEvents: 'none' } : { cursor: 'pointer', marginLeft: 10 }}
-                    onClick={() => onGetClaimedBalles()}
+                    onClick={() => onGetClaimedBalls()}
                   />
                   <div
                     className="btn"
@@ -223,7 +242,10 @@ const Academy = ({
                   className="btn"
                   onClick={() => onUnstakeBalls()}
                   style={Number((myStakedBalls / 1e+18).toFixed(2)) < 0.01 ? { pointerEvents: 'none', opacity: 0.6 } : {}}
-                >Unstake All Balls</div>
+                >
+                  Unstake All Balls
+                  <div style={{ fontSize: 12, color: '#fdd836' }}>fee ~8.3%</div>
+                </div>
               </div>
             </div>
             <div className="banner banner_academy">
