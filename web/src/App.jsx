@@ -345,7 +345,7 @@ const App = () => {
           </Link>
         </div>
         <div className="sidebar_block sidebar_block_bottom">
-          <a className="discord_block" href="https://discord.com/invite/#" target="_blank" rel="noopener noreferrer">
+          <a className="discord_block" href="https://discord.gg/kYnwVVqf" target="_blank" rel="noopener noreferrer">
             <FontAwesomeIcon icon={['fab', 'discord']} />Join Discord Community!
           </a>
           <div className="subtitle" style={{ fontSize: 12 }}>Made for Tron 2022</div>

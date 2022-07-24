@@ -21,9 +21,13 @@ const Battles = ({
 
   useEffect(() => {
     if (typeof contracts.FootballGame !== 'string' && playerLimit === 0) {
-      contracts.FootballGame.getEnergy(1).call().then((playerHex) => {
-        setPlayerLimit(Math.floor(Number(playerHex._hex) / 10));
-      });
+      if (myPlayers.length !== 0) {
+        contracts.FootballGame.getEnergy(myPlayers[0].id).call().then((playerHex) => {
+          setPlayerLimit(Math.floor(Number(playerHex._hex) / 10));
+        });
+      } else {
+        setPlayerLimit(10);
+      }
     }
   }, [contracts]); // eslint-disable-line react-hooks/exhaustive-deps
 
@@ -46,48 +50,46 @@ const Battles = ({
 
   const onStart = () => {
     if (betAmount >= 0.01 && betAmount <= Number((tokens.balls / 1e+18).toFixed(2))) {
-      contracts.FootballGame.players().call().then((playerHex) => {
-        contracts.FootballGame.play(1, window.tronLink.tronWeb.toHex(betAmount * 1e+18)).send().then((resultGame) => {
-          setStart(true);
-          const checkEvent = setInterval(() => {
-            fetch(`https://api.shasta.trongrid.io/v1/transactions/${resultGame}/events`, {
-              method: 'GET',
-              headers: { Accept: 'application/json' }
-            }).then((response) => response.json()).then((response) => {
-              if (response.data.length !== 0) {
-                const sound = new Pizzicato.Sound('sound.mp3', () => {
-                  sound.play();
-                });
+      contracts.FootballGame.play(myPlayers.sort((a, b) => a.id - b.id)[0].id, window.tronLink.tronWeb.toHex(betAmount * 1e+18)).send().then((resultGame) => {
+        setStart(true);
+        const checkEvent = setInterval(() => {
+          fetch(`https://api.shasta.trongrid.io/v1/transactions/${resultGame}/events`, {
+            method: 'GET',
+            headers: { Accept: 'application/json' }
+          }).then((response) => response.json()).then((response) => {
+            if (response.data.length !== 0) {
+              const sound = new Pizzicato.Sound('sound.mp3', () => {
+                sound.play();
+              });
 
-                clearInterval(checkEvent);
+              clearInterval(checkEvent);
 
-                setPlayerLimit(playerLimit - 1);
+              setPlayerLimit(playerLimit - 1);
 
-                let attackerScore = Math.ceil(Math.random() * 5);
-                let defenderScore = Math.ceil(Math.random() * 5)
-                if (response.data[0].result.result === '1') {
-                  if (attackerScore <= defenderScore) {
-                    attackerScore = Math.ceil(Math.random() * (5 - defenderScore + 1) + defenderScore + 1);
-                  }
-                  setTokens({...tokens, balls: tokens.balls + (betAmount * 1e+18) });
-                } else if (response.data[0].result.result === '2') {
-                  if (defenderScore <= attackerScore) {
-                    defenderScore = Math.ceil(Math.random() * (5 - attackerScore + 1) + attackerScore + 1);
-                  }
-                  setTokens({...tokens, balls: tokens.balls - (betAmount * 1e+18) });
-                } else {
-                  attackerScore = defenderScore;
+              let attackerScore = Math.ceil(Math.random() * 5);
+              let defenderScore = Math.ceil(Math.random() * 5)
+              if (response.data[0].result.result === '1') {
+                if (attackerScore <= defenderScore) {
+                  attackerScore = Math.ceil(Math.random() * (5 - defenderScore + 1) + defenderScore + 1);
                 }
-
-                setGameScore({
-                  attackerId: attackerScore,
-                  defenderId: defenderScore,
-                  score: Number(response.data[0].result.result),
-                });
+                setTokens({...tokens, balls: tokens.balls + (betAmount * 1e+18) });
+              } else if (response.data[0].result.result === '2') {
+                if (defenderScore <= attackerScore) {
+                  defenderScore = Math.ceil(Math.random() * (5 - attackerScore + 1) + attackerScore + 1);
+                }
+                setTokens({...tokens, balls: tokens.balls - (betAmount * 1e+18) });
+              } else {
+                attackerScore = defenderScore;
               }
-            });
-          }, 2000);
-        });
+
+              setGameScore({
+                attackerId: attackerScore,
+                defenderId: defenderScore,
+                score: Number(response.data[0].result.result),
+              });
+            }
+          });
+        }, 2000);
       });
     } else {
       onPopup('error', 'Wrong bet amount');
@@ -159,7 +161,7 @@ const Battles = ({
                 <div className="p2p_block_right">
                   <img src="./img/map.png" alt="" />
                   <input
-                    placeholder="Your bet"
+                    placeholder="Your Balls bet"
                     type="text"
                     value={betAmount}
                     onChange={(e) => setBetAmount(e.target.value)}
@@ -167,12 +169,13 @@ const Battles = ({
                   />
                   <div
                     className="btn"
-                    onClick={() => gamePlayers.length === 5 ? onStart() : ''}
+                    onClick={onStart}
+                    // onClick={() => gamePlayers.length === 5 ? onStart() : ''}
                     style={gamePlayers.length === 5 ? {
                       margin: '10px 0 0 0'
                     } : {
                       margin: '10px 0 0 0',
-                      pointerEvents: 'none',
+                      // pointerEvents: 'none',
                       opacity: 0.5,
                       cursor: 'default',
                     }}
