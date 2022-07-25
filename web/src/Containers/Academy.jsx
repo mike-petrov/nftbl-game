@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { FontAwesomeIcon } from '@fortawesome/react-fontawesome';
+import { Link } from 'react-router-dom';
 
 const Academy = ({
   onPopup,
@@ -193,6 +194,22 @@ const Academy = ({
                       </div>
                     </div>
                   ))}
+                  {myPlayers.length === 0 && (
+                    <div
+                      style={{
+                        display: 'flex',
+                        justifyContent: 'center',
+                        flexDirection: 'column',
+                        maxWidth: 350,
+                        margin: 'auto',
+                      }}
+                    >
+                      <Link
+                        to="/marketplace"
+                        className="btn"
+                      >Buy player</Link>
+                    </div>
+                  )}
                 </div>
               </div>
             </div>

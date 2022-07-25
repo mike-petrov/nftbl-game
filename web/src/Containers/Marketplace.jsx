@@ -9,8 +9,12 @@ const Marketplace = ({
     contracts,
     onGetMyPlayers,
   }) => {
-  const onBuy = (amount) => {
-    contracts.PlayersV4.mint(amount).send().then((mintTemp) => {
+  const onBuy = (type, price, amount) => {
+    const priceTemp = price * 1e+6;
+    contracts.PlayersV4.mint(amount).send({
+      feeLimit:100_000_000,
+      callValue: priceTemp,
+    }).then(() => {
       setTimeout(() => {
         onPopup('success', 'Your team has been replenished with new players');
         onGetMyPlayers();
@@ -50,12 +54,12 @@ const Marketplace = ({
         <div className="cards_list_inner">
           <div className="p2p_subtitle">Surprize Box</div>
           {[
-            { name: 'Silver Pack', count: 1 },
-            { name: 'Rare Pack', count: 3 },
-            { name: 'Gold Pack', count: 5 },
-            { name: 'Premium Pack', count: 10 },
+            { name: 'Silver Pack', price: 100, count: 1 },
+            { name: 'Bronze Pack', price: 150, count: 1 },
+            { name: 'Epic Pack', price: 300, count: 1 },
+            { name: 'Legendary Pack', price: 500, count: 1 },
           ].map((gift, index) => (
-            <div className="card" key={gift.count}>
+            <div className="card" key={gift.name}>
               <img src={`./img/players/gift${index + 1}.png`} alt="" />
               <div className="card_content">
                 <div className="card_number">{`NO. ${index + 1}`}</div>
@@ -65,12 +69,12 @@ const Marketplace = ({
                 </div>
                 <div className="card_title">
                   <span>Price</span>
-                  {` ${gift.count * 10} trx`}
+                  {` ${gift.price} trx`}
                 </div>
                 <div
                   className="btn"
                   style={{ margin: '20px 0 0 0' }}
-                  onClick={() => onBuy(gift.count)}
+                  onClick={() => onBuy(gift.name, gift.price, gift.count)}
                 >Buy</div>
               </div>
             </div>
