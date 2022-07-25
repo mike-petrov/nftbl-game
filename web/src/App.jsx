@@ -356,7 +356,7 @@ const App = () => {
           >
             <img src="./img/cup.png" alt="" />
             <span>
-              Champion Cup
+              Champions Cup
               <span style={{ fontSize: 10, display: 'block', color: '#c4c4c4', marginTop: 5 }}>Coming soon</span>
             </span>
           </Link>

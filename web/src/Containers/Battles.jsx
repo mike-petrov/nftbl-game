@@ -216,7 +216,7 @@ const Battles = ({
                     >Play again</div>
                   </>
                 ) : (
-                  <div style={{ textAlign: 'center' }}>Loading</div>
+                  <div style={{ textAlign: 'center' }}>Match in progress...</div>
                 )}
               </div>
             )}
