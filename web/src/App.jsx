@@ -54,6 +54,7 @@ const App = () => {
   });
   const [isInit, setInit] = useState(false);
   const [isInitAcademy, setInitAcademy] = useState(false);
+  const [isLoadingPlayers, setLoadingPlayers] = useState(true);
   const [isLoadingBalls, setLoadingBalls] = useState(false);
   const [isLoadingGoals, setLoadingGoals] = useState(false);
   const [account, setAccount] = useState(null);
@@ -70,14 +71,10 @@ const App = () => {
   const [popup, setPopup] = useState({ current: null, item: null });
 
   useEffect(() => {
-    if (!account && document.location.pathname !== '/') {
-      document.location.href = '/';
-    }
-
     window.addEventListener('message', (e) => {
       if (e.data.message && e.data.message.action === "tabReply") {
         console.log("tabReply event", e.data.message);
-        if (e.data.message.data.data.node && e.data.message.data.data.node.name !== "Shasta Testnet") {
+        if (e.data.message.data.data.node && e.data.message.data.data.node.name && e.data.message.data.data.node.name !== "Shasta Testnet") {
           onPopup('error', 'Choose Shasta Testnet in TronLin extension');
         } else if (e.data.message.data.data.isAuth) {
           setAccount(e.data.message.data.data);
@@ -86,8 +83,8 @@ const App = () => {
           }, 1000);
         } else if (e.data.message.data.data === 'Confirmation declined by user') {
           onPopup('error', 'Confirmation declined by user');
-        } else if (e.data.message.data.data.message !== 'The site is already in the whitelist' && !e.data.message.data.data.txID) {
-          onPopup('error', 'TronLink extension with Shasta Testnet is not installed or unlocked');
+        } else if (e.data.message.data.data.address === false || e.data.message.data.data === '') {
+          onPopup('error', 'TronLink extension locked');
         }
       }
 
@@ -152,7 +149,11 @@ const App = () => {
 	};
 
   const onConnect = async () => {
-    await window.tronLink.request({method: 'tron_requestAccounts'});
+    try {
+      await window.tronLink.request({method: 'tron_requestAccounts'});
+    } catch (err) {
+      onPopup('error', 'TronLink extension is not installed');
+    }
 	};
 
   const onActivateContracts = async () => {
@@ -180,6 +181,7 @@ const App = () => {
   }, [contracts]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const onGetMyPlayers = () => {
+    setLoadingPlayers(true);
     setMyPlayers([]);
     contracts.PlayersV4.balanceOf(account.address).call().then((playersCount) => {
       for (let i = 0; i < Number(playersCount._hex); i += 1) {
@@ -189,6 +191,9 @@ const App = () => {
           });
         }, 10);
       }
+      setTimeout(() => {
+        setLoadingPlayers(false);
+      }, 1000);
     });
 	};
 
@@ -374,6 +379,7 @@ const App = () => {
               onConnect={onConnect}
               tokens={tokens}
               myPlayers={myPlayers}
+              isLoadingPlayers={isLoadingPlayers}
             />}
           />
           <Route
@@ -400,6 +406,7 @@ const App = () => {
               onGetMyStakedBalls={onGetMyStakedBalls}
               isInitAcademy={isInitAcademy}
               setInitAcademy={setInitAcademy}
+              isLoadingPlayers={isLoadingPlayers}
             />}
           />
           <Route
@@ -414,6 +421,7 @@ const App = () => {
               setTokens={setTokens}
               onExit={onExit}
               contracts={contracts}
+              isLoadingPlayers={isLoadingPlayers}
             />}
           />
           <Route

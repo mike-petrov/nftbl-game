@@ -8,6 +8,7 @@ const Home = ({
   tokens,
   onConnect,
   onExit,
+  isLoadingPlayers,
 }) => {
   const [filter, setFilter] = useState('');
 
@@ -60,40 +61,54 @@ const Home = ({
           </div>
           <div className="cards_list">
             <div className="cards_list_inner">
-              {myPlayers && myPlayers.map((player) => (player.name.toLowerCase().indexOf(filter.toLocaleLowerCase()) !== -1 && (
-                <div className="card" key={player.id}>
-                  <img src={player.src} alt="" />
-                  <div className="card_content">
-                    <div className="card_number">{`NO. ${player.id}`}</div>
-                    <div className="card_title">
-                      <span>Name</span>
-                      {` ${player.name}`}
-                    </div>
-                    <div className="card_title">
-                      <span>Position</span>
-                      {` ${player.position}`}
-                    </div>
-                    <div className="card_title">
-                      <span>Rating</span>
-                      {` ${player.rating}`}
-                    </div>
+              {isLoadingPlayers ? (
+                <>
+                  <div className="card">
+                    <FontAwesomeIcon
+                      icon={['fas', 'spinner']}
+                      spin
+                      style={{ margin: '20px auto', display: 'flex' }}
+                    />
                   </div>
-                </div>
-              )))}
-              {myPlayers && myPlayers.length < 5 && (
-                <div className="card">
-                  <img src="./img/players/0.png" alt=""/>
-                  <div className="card_content">
-                    <div className="card_title">
-                      <span>Buy 5 players to assemble a team </span>
+                </>
+              ) : (
+                <>
+                  {myPlayers && myPlayers.map((player) => (player.name.toLowerCase().indexOf(filter.toLocaleLowerCase()) !== -1 && (
+                    <div className="card" key={player.id}>
+                      <img src={player.src} alt="" />
+                      <div className="card_content">
+                        <div className="card_number">{`NO. ${player.id}`}</div>
+                        <div className="card_title">
+                          <span>Name</span>
+                          {` ${player.name}`}
+                        </div>
+                        <div className="card_title">
+                          <span>Position</span>
+                          {` ${player.position}`}
+                        </div>
+                        <div className="card_title">
+                          <span>Rating</span>
+                          {` ${player.rating}`}
+                        </div>
+                      </div>
                     </div>
-                  </div>
-                  <Link
-                    to="/marketplace"
-                    className="btn"
-                    style={{ margin: '0 20px 20px 20px' }}
-                  >Buy players</Link>
-                </div>
+                  )))}
+                  {myPlayers && myPlayers.length < 5 && (
+                    <div className="card">
+                      <img src="./img/players/0.png" alt=""/>
+                      <div className="card_content">
+                        <div className="card_title">
+                          <span>Buy 5 players to assemble a team </span>
+                        </div>
+                      </div>
+                      <Link
+                        to="/marketplace"
+                        className="btn"
+                        style={{ margin: '0 20px 20px 20px' }}
+                      >Buy players</Link>
+                    </div>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -108,6 +123,7 @@ const Home = ({
             style={{ marginTop: 20 }}
             onClick={onConnect}
           >Connect wallet <FontAwesomeIcon icon={['fas', 'link']} /></div>
+          <div className="banner_subtitle" style={{ fontSize: 10, marginTop: 10 }}>Get 10,000 TRX for Shasta Network from Twitter account <a href="https://twitter.com/TronTest2" rel="noopener noreferrer" target="_blank" style={{ textDecoration: 'underline', color: '#3e4de5' }}>@TronTest2</a></div>
         </div>
       )}
     </div>

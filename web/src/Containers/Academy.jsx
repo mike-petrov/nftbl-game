@@ -23,6 +23,7 @@ const Academy = ({
   isInitAcademy,
   setInitAcademy,
   onGetMyStakedBalls,
+  isLoadingPlayers,
 }) => {
   useEffect(() => {
     if (typeof contracts.FootballGame !== 'string' && !isInitAcademy) {
@@ -34,7 +35,6 @@ const Academy = ({
     }
   }, [contracts]); // eslint-disable-line react-hooks/exhaustive-deps
 
-
   const [ballsAmount, setBallsAmount] = useState(0.01);
 
   const onStake = (id) => {
@@ -45,7 +45,7 @@ const Academy = ({
           const array = stakedPlayers.map((player) => Number(player._hex));
           setMyStakedPlayers(array);
         });
-      }, 2000);
+      }, 3000);
     });
 	};
 
@@ -57,7 +57,7 @@ const Academy = ({
           const array = stakedPlayers.map((player) => Number(player._hex));
           setMyStakedPlayers(array);
         });
-      }, 2000);
+      }, 3000);
     });
 	};
 
@@ -66,7 +66,7 @@ const Academy = ({
       contracts.GoalV2.upgradePlayer(id, 1).send().then(() => {
         setTimeout(() => {
           onPopup('success', 'This player was upgraded');
-        }, 2000);
+        }, 3000);
       });
     } else {
       onPopup('error', `Not enough Goals for upgrade. Needs more than 0.01)`);
@@ -79,7 +79,7 @@ const Academy = ({
         onPopup('success', 'Claimed Balls success');
         onGetClaimedBalls();
         onBalance();
-      }, 2000);
+      }, 3000);
     });
 	};
 
@@ -89,7 +89,7 @@ const Academy = ({
         onPopup('success', 'Claimed Goals success');
         onGetClaimedGoals();
         onBalance();
-      }, 2000);
+      }, 3000);
     });
 	};
 
@@ -100,7 +100,7 @@ const Academy = ({
           onPopup('success', 'Your Balls was staked');
           onGetMyStakedBalls();
           onBalance();
-        }, 2000);
+        }, 3000);
       });
     } else {
       onPopup('error', 'Wrong Balls amount');
@@ -173,42 +173,54 @@ const Academy = ({
               </div>
               <div className="banner_content">
                 <div className="team_block">
-                  {myPlayers && myPlayers.map((player) => (
-                    <div className="team_player_block" key={player.id}>
-                      <img src={player.src} alt="" />
-                      <div className="team_player_number">{`NO. ${player.id}`}</div>
-                      <div className="team_player_position">{player.position}</div>
-                      <div className="team_player_name">{`${player.name} (Rating: ${player.rating})`}</div>
-                      <div className="team_player_btn">
-                        {myStakedPlayers.indexOf(player.id) !== -1 ? (
-                          <div
-                            className="btn"
-                            onClick={() => onUnstake(player.id)}
-                          >Unstake</div>
-                        ) : (
-                          <div
-                            className="btn"
-                            onClick={() => onStake(player.id)}
-                          >Stake</div>
-                        )}
-                      </div>
+                  {isLoadingPlayers ? (
+                    <div className="card" style={{ margin: 'auto' }}>
+                      <FontAwesomeIcon
+                        icon={['fas', 'spinner']}
+                        spin
+                        style={{ margin: '20px auto', display: 'flex' }}
+                      />
                     </div>
-                  ))}
-                  {myPlayers.length === 0 && (
-                    <div
-                      style={{
-                        display: 'flex',
-                        justifyContent: 'center',
-                        flexDirection: 'column',
-                        maxWidth: 350,
-                        margin: 'auto',
-                      }}
-                    >
-                      <Link
-                        to="/marketplace"
-                        className="btn"
-                      >Buy player</Link>
-                    </div>
+                  ) : (
+                    <>
+                      {myPlayers && myPlayers.map((player) => (
+                        <div className="team_player_block" key={player.id}>
+                          <img src={player.src} alt="" />
+                          <div className="team_player_number">{`NO. ${player.id}`}</div>
+                          <div className="team_player_position">{player.position}</div>
+                          <div className="team_player_name">{`${player.name} (Rating: ${player.rating})`}</div>
+                          <div className="team_player_btn">
+                            {myStakedPlayers.indexOf(player.id) !== -1 ? (
+                              <div
+                                className="btn"
+                                onClick={() => onUnstake(player.id)}
+                              >Unstake</div>
+                            ) : (
+                              <div
+                                className="btn"
+                                onClick={() => onStake(player.id)}
+                              >Stake</div>
+                            )}
+                          </div>
+                        </div>
+                      ))}
+                      {myPlayers.length === 0 && (
+                        <div
+                          style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            flexDirection: 'column',
+                            maxWidth: 350,
+                            margin: 'auto',
+                          }}
+                        >
+                          <Link
+                            to="/marketplace"
+                            className="btn"
+                          >Buy player</Link>
+                        </div>
+                      )}
+                    </>
                   )}
                 </div>
               </div>
@@ -274,20 +286,37 @@ const Academy = ({
               </div>
               <div className="banner_content">
                 <div className="team_block">
-                  {myPlayers && myPlayers.map((player) => (myStakedPlayers.indexOf(player.id) !== -1 && (
-                    <div className="team_player_block" key={player.id}>
-                      <img src={player.src} alt="" />
-                      <div className="team_player_number">{`NO. ${player.id}`}</div>
-                      <div className="team_player_position">{player.position}</div>
-                      <div className="team_player_name">{`${player.name} (Rating: ${player.rating})`}</div>
-                      <div className="team_player_btn">
-                        <div
-                          className="btn"
-                          onClick={() => onUpgrade(player.id)}
-                        >Upgrade</div>
-                      </div>
+                  {isLoadingPlayers ? (
+                    <div className="card" style={{ margin: 'auto' }}>
+                      <FontAwesomeIcon
+                        icon={['fas', 'spinner']}
+                        spin
+                        style={{ margin: '20px auto', display: 'flex' }}
+                      />
                     </div>
-                  )))}
+                  ) : (
+                    <>
+                      {myPlayers && myPlayers.map((player) => (myStakedPlayers.indexOf(player.id) !== -1 && (
+                        <div className="team_player_block" key={player.id}>
+                          <img src={player.src} alt="" />
+                          <div className="team_player_number">{`NO. ${player.id}`}</div>
+                          <div className="team_player_position">{player.position}</div>
+                          <div className="team_player_name">{`${player.name} (Rating: ${player.rating})`}</div>
+                          <div className="team_player_btn">
+                            <div
+                              className="btn"
+                              onClick={() => onUpgrade(player.id)}
+                            >Upgrade</div>
+                          </div>
+                        </div>
+                      )))}
+                      {myStakedPlayers.filter((stakedPlayer) => stakedPlayer > 0).length === 0 && (
+                        <div style={{ display: 'flex', justifyContent: 'center' }}>
+                          Stake your player for upgrading
+                        </div>
+                      )}
+                    </>
+                  )}
                 </div>
               </div>
             </div>

@@ -12,6 +12,7 @@ const Battles = ({
     myStakedPlayers,
     setTokens,
     onPopup,
+    isLoadingPlayers,
   }) => {
   const [playerLimit, setPlayerLimit] = useState(0);
   const [betAmount, setBetAmount] = useState(0.01);
@@ -223,61 +224,73 @@ const Battles = ({
           {!start && (
             <>
               <div className="p2p_subtitle" id="scroll_anchor">Pick up players for match</div>
-              {myPlayers && myPlayers.map((player) => (gamePlayers.map((item) => item.id).indexOf(player.id) === -1 && (
-                <div
-                  key={player.id}
-                  className="card"
-                >
-                  <img src={player.src} alt="" />
-                  <div className="card_content">
-                    <div className="card_number">{`NO. ${player.id}`}</div>
-                    <div className="card_title">
-                      <span>Name</span>
-                      {` ${player.name}`}
-                    </div>
-                    <div className="card_title">
-                      <span>Position</span>
-                      {` ${player.position}`}
-                    </div>
-                    <div className="card_title">
-                      <span>Rating</span>
-                      {` ${player.rating}`}
-                    </div>
-                    {myStakedPlayers.indexOf(player.id) === -1 ? (
-                      <div
-                        className="btn"
-                        onClick={() => gamePlayers.length < 5 ? onSelectPlayer(player) : ''}
-                        style={gamePlayers.length < 5 ? {
-                          margin: '20px 0 0 0'
-                        } : {
-                          margin: '20px 0 0 0',
-                          pointerEvents: 'none',
-                          opacity: 0.5,
-                          cursor: 'default',
-                        }}
-                      >Add</div>
-                    ) : (
-                      <div
-                        className="btn"
-                        style={{
-                          margin: '20px 0 0 0',
-                          pointerEvents: 'none',
-                          opacity: 0.5,
-                          cursor: 'default',
-                        }}
-                      >Staking</div>
-                    )}
-                  </div>
+              {isLoadingPlayers ? (
+                <div className="card" style={{ margin: 'auto' }}>
+                  <FontAwesomeIcon
+                    icon={['fas', 'spinner']}
+                    spin
+                    style={{ margin: '20px auto', display: 'flex' }}
+                  />
                 </div>
-              )))}
-              {myPlayers.length === 0 && ( 
-                <div className="banner">
-                  <Link
-                    to="/marketplace"
-                    className="btn"
-                    style={{ marginTop: 10 }}
-                  >Pick up the best player</Link>
-                </div>
+              ) : (
+                <>
+                  {myPlayers && myPlayers.map((player) => (gamePlayers.map((item) => item.id).indexOf(player.id) === -1 && (
+                    <div
+                      key={player.id}
+                      className="card"
+                    >
+                      <img src={player.src} alt="" />
+                      <div className="card_content">
+                        <div className="card_number">{`NO. ${player.id}`}</div>
+                        <div className="card_title">
+                          <span>Name</span>
+                          {` ${player.name}`}
+                        </div>
+                        <div className="card_title">
+                          <span>Position</span>
+                          {` ${player.position}`}
+                        </div>
+                        <div className="card_title">
+                          <span>Rating</span>
+                          {` ${player.rating}`}
+                        </div>
+                        {myStakedPlayers.indexOf(player.id) === -1 ? (
+                          <div
+                            className="btn"
+                            onClick={() => gamePlayers.length < 5 ? onSelectPlayer(player) : ''}
+                            style={gamePlayers.length < 5 ? {
+                              margin: '20px 0 0 0'
+                            } : {
+                              margin: '20px 0 0 0',
+                              pointerEvents: 'none',
+                              opacity: 0.5,
+                              cursor: 'default',
+                            }}
+                          >Add</div>
+                        ) : (
+                          <div
+                            className="btn"
+                            style={{
+                              margin: '20px 0 0 0',
+                              pointerEvents: 'none',
+                              opacity: 0.5,
+                              cursor: 'default',
+                            }}
+                          >Staking</div>
+                        )}
+                      </div>
+                    </div>
+                  )))}
+                  {myPlayers.length === 0 && ( 
+                    <div className="banner">
+                      <Link
+                        to="/marketplace"
+                        className="btn"
+                        style={{ marginTop: 10 }}
+                      >Pick up the best player</Link>
+                    </div>
+                  )}
+                </>
               )}
             </>
           )}

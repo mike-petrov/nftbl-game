@@ -18,7 +18,7 @@ const Marketplace = ({
       setTimeout(() => {
         onPopup('success', 'Your team has been replenished with new players');
         onGetMyPlayers();
-      }, 2000);
+      }, 3000);
     });
 	};
 
@@ -79,7 +79,7 @@ const Marketplace = ({
               </div>
             </div>
           ))}
-          <div className="p2p_subtitle">Users NFT</div>
+          <div className="p2p_subtitle">Players of other users</div>
           <div className="banner">
             <div className="banner_subtitle" style={{ marginBottom: 0 }}>No one put their players on the marketplace </div>
           </div>
