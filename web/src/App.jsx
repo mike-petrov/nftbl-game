@@ -47,10 +47,10 @@ const App = () => {
   const location = useLocation();
 
   const [contracts, setContracts] = useState({
-    PlayersV4: 'TBpkDAhepL9FPtdP5mVGETqUN5gn8z6g9o',
-    BallV2: 'TMSE87jKvR2SWKG2sWLoBDrZy32atjJHzV',
-    GoalV2:  'TTMgs4mYh1MMSpTAutfQCRuBCPx1LZ3gBp',
-    FootballGame: 'THi4RtUs5qRsG7k7yP7Uv5XoHFdDyzXJpW',
+    PlayersV4: 'TWL74pz2Tfnzhf9K9B4ERKWLdXK6BqiY8E',
+    BallV2: 'TTANLJLpu8e8MECcQBf2BMCCweRSa5k9QS',
+    GoalV2:  'TYUHeyERNyJ5kQMebDq1trrscARPcJbf1u',
+    FootballGame: 'TVifaRyAXX7SiMy28B2kFC4nAdUGAnTe7c',
   });
   const [isInit, setInit] = useState(false);
   const [isInitAcademy, setInitAcademy] = useState(false);
@@ -70,18 +70,24 @@ const App = () => {
   const [popup, setPopup] = useState({ current: null, item: null });
 
   useEffect(() => {
-    // if (!account && document.location.pathname !== '/') {
-    //   document.location.href = '/';
-    // }
+    if (!account && document.location.pathname !== '/') {
+      document.location.href = '/';
+    }
 
     window.addEventListener('message', (e) => {
       if (e.data.message && e.data.message.action === "tabReply") {
         console.log("tabReply event", e.data.message);
-        if (e.data.message.data.data.isAuth) {
+        if (e.data.message.data.data.node && e.data.message.data.data.node.name !== "Shasta Testnet") {
+          onPopup('error', 'Choose Shasta Testnet in TronLin extension');
+        } else if (e.data.message.data.data.isAuth) {
           setAccount(e.data.message.data.data);
           setTimeout(() => {
             onActivateContracts();
           }, 1000);
+        } else if (e.data.message.data.data === 'Confirmation declined by user') {
+          onPopup('error', 'Confirmation declined by user');
+        } else if (e.data.message.data.data.message !== 'The site is already in the whitelist' && !e.data.message.data.data.txID) {
+          onPopup('error', 'TronLink extension with Shasta Testnet is not installed or unlocked');
         }
       }
 
@@ -92,10 +98,8 @@ const App = () => {
 
       if (e.data.message && e.data.message.action === "setNode") {
         console.log("setNode event", e.data.message)
-        if (e.data.message.data.node.chain === '_') {
-          console.log("tronLink currently selects the main chain");
-        } else {
-          console.log("tronLink currently selects the side chain");
+        if (e.data.message.data.node && e.data.message.data.node.fullNode === "https://api.shasta.trongrid.io") {
+          document.location.reload();
         }
       }
 
@@ -214,6 +218,10 @@ const App = () => {
       setTimeout(() => {
         setLoadingBalls(false);
       }, 1000);
+    }).catch(() => {
+      setTimeout(() => {
+        setLoadingBalls(false);
+      }, 1000);
     });
 	};
 
@@ -221,6 +229,10 @@ const App = () => {
     setLoadingGoals(true);
     contracts.GoalV2.claimableView(account.address).call().then((claimedGoalsTemp) => {
       setClaimedGoals(Number(claimedGoalsTemp._hex));
+      setTimeout(() => {
+        setLoadingGoals(false);
+      }, 1000);
+    }).catch(() => {
       setTimeout(() => {
         setLoadingGoals(false);
       }, 1000);
