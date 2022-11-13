@@ -277,8 +277,7 @@ select {
     display: block;
     font-size: 12px;
     color: #fff;
-    background: #00bea8;
-    background: linear-gradient(63deg, #ff39f8, #2c84ff);
+    border: 1px solid #fff;
     border-radius: 14px;
     padding: 15px;
     margin: 10px 5px 20px;
@@ -427,6 +426,30 @@ select {
     font-weight: 400;
 }
 
+.subtitle_gradient_gray {
+    background: linear-gradient(270.69deg, #202125 .6%, #ffffff 48.97%, #3a89ff 99.4%);
+    color: transparent;
+    background-clip: text;
+    position: relative;
+    font-weight: 900;
+}
+
+.subtitle_gradient_green {
+    background: linear-gradient(270.69deg, #202125 .6%, #43e77d 48.97%, #00ff22 99.4%);
+    color: transparent;
+    background-clip: text;
+    position: relative;
+    font-weight: 900;
+}
+
+.subtitle_gradient_red {
+    background: linear-gradient(270.69deg, #202125 .6%, #ff5252 48.97%, #3a89ff 99.4%);
+    color: transparent;
+    background-clip: text;
+    position: relative;
+    font-weight: 900;
+}
+
 .p2p_block {
     display: flex;
     align-items: center;
@@ -489,11 +512,6 @@ select {
     border: 1px dashed #3e4de5;
     border-radius: 20px;
     padding: 20px;
-}
-
-.p2p_result .title {
-    color: #3e4de5;
-    filter: drop-shadow(0px 0px 20px);
 }
 
 .team_block {
@@ -587,6 +605,51 @@ select {
     width: 100%;
     height: auto;
     border-radius: 30px;
+}
+
+.cards_list_block {
+    justify-content: space-between;
+    width: 100%;
+}
+
+.cards_list_block .cards_list_inner {
+    width: unset;
+}
+
+.cards_list_mini {
+    display: flex;
+    align-items: center;
+    max-width: 1000px;
+    margin: auto;
+    overflow-y: unset;
+    height: unset;
+}
+
+.cards_list_mini .cards_list_inner {
+    margin-bottom: 0;
+}
+
+.cards_list_mini .card {
+    width: unset;
+    background: unset;
+}
+
+.cards_list_mini img {
+    width: 50px;
+    border-radius: 8px;
+}
+
+.card_goal {
+    position: absolute;
+    top: -18px;
+    right: 0;
+    left: 0;
+    font-size: 12px;
+    text-align: center;
+    font-weight: 900;
+    margin-bottom: 2px;
+    color: #fff;
+    text-shadow: 0px 1px #3e4de4;
 }
 
 .card_content {
