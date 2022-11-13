@@ -272,6 +272,18 @@ const App = () => {
   return (
     <>
       <div className="mobile_block">Best use from desktop version</div>
+      {popup.current === 'loading' && (
+        <div className="popup">
+          <div className="popup_content">
+            <div className="popup_title">Loading</div>
+            <FontAwesomeIcon
+              icon={['fas', 'spinner']}
+              spin
+              style={{ margin: '20px auto 0', display: 'flex' }}
+            />
+          </div>
+        </div>
+      )}
       {popup.current === 'success' && (
         <div className="popup">
           <div
