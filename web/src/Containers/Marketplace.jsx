@@ -9,10 +9,12 @@ const Marketplace = ({
     contracts,
     onGetMyPlayers,
   }) => {
+
   const onBuy = (type, price, amount) => {
     const priceTemp = price * 1e+6;
+    onPopup('loading');
     contracts.PlayersV4.mint(amount).send({
-      feeLimit:100_000_000,
+      feeLimit: 100_000_000,
       callValue: priceTemp,
     }).then(() => {
       setTimeout(() => {
