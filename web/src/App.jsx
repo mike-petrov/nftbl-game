@@ -49,10 +49,14 @@ const App = () => {
   const location = useLocation();
 
   const [contracts, setContracts] = useState({
-    PlayersV4: 'TWL74pz2Tfnzhf9K9B4ERKWLdXK6BqiY8E',
-    BallV2: 'TTANLJLpu8e8MECcQBf2BMCCweRSa5k9QS',
-    GoalV2:  'TYUHeyERNyJ5kQMebDq1trrscARPcJbf1u',
-    FootballGame: 'TVifaRyAXX7SiMy28B2kFC4nAdUGAnTe7c',
+    // PlayersV4: 'TWL74pz2Tfnzhf9K9B4ERKWLdXK6BqiY8E',
+    // BallV2: 'TTANLJLpu8e8MECcQBf2BMCCweRSa5k9QS',
+    // GoalV2:  'TYUHeyERNyJ5kQMebDq1trrscARPcJbf1u',
+    // FootballGame: 'TVifaRyAXX7SiMy28B2kFC4nAdUGAnTe7c',
+    PlayersV4: 'TAchyfWgC6TFMohMMFSRX9EJFLTrJMdK3U',
+    BallV2: 'TLvCD3m9oyNBqgG8GWdfLdiT6TWW1iwkb7',
+    GoalV2:  'TP5EwkNemPSkeocaJNwTFao5r9aYiYKyYy',
+    FootballGame: 'TSkeC61NTVC8Hb16hiXcp67eUAAbBYKSxF',
   });
   const [isInit, setInit] = useState(false);
   const [isInitAcademy, setInitAcademy] = useState(false);
