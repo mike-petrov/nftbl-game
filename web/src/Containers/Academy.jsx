@@ -63,6 +63,7 @@ const Academy = ({
 
   const onUpgrade = (id) => {
     if (Number((tokens.goals / 1e+18).toFixed(2)) >= 0.01) {
+      onPopup('loading');
       contracts.GoalV2.upgradePlayer(id, 1).send().then(() => {
         setTimeout(() => {
           onPopup('success', 'This player was upgraded');
@@ -74,6 +75,7 @@ const Academy = ({
 	};
 
   const onClaimBalls = () => {
+    onPopup('loading');
     contracts.BallV2.claimBalls(myPlayers.map((player) => player.id)).send().then(() => {
       setTimeout(() => {
         onPopup('success', 'Claimed Balls success');
@@ -84,6 +86,7 @@ const Academy = ({
 	};
 
   const onClaimGoals = () => {
+    onPopup('loading');
     contracts.GoalV2.claimGoal().send().then(() => {
       setTimeout(() => {
         onPopup('success', 'Claimed Goals success');
@@ -95,6 +98,7 @@ const Academy = ({
 
   const onStakeBalls = () => {
     if (ballsAmount >= 0.01 && ballsAmount <= Number((tokens.balls / 1e+18).toFixed(2))) {
+      onPopup('loading');
       contracts.GoalV2.staking(window.tronLink.tronWeb.toHex(ballsAmount * 1e+18)).send().then(() => {
         setTimeout(() => {
           onPopup('success', 'Your Balls was staked');
@@ -108,6 +112,7 @@ const Academy = ({
 	};
 
   const onUnstakeBalls = () => {
+    onPopup('loading');
     contracts.GoalV2.withdrawAllBallsAndClaimGoal().send().then(() => {
       setTimeout(() => {
         onPopup('success', 'Your Balls was received');

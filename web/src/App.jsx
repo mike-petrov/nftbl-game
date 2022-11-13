@@ -433,6 +433,7 @@ const App = () => {
             element={<Battles
               onPopup={onPopup}
               account={account}
+              players={players}
               myPlayers={myPlayers}
               myStakedPlayers={myStakedPlayers}
               tokens={tokens}
