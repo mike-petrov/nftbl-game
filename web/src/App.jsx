@@ -17,6 +17,7 @@ import {
     faRightFromBracket,
     faCheck,
     faRotate,
+    faCircleInfo,
 } from '@fortawesome/free-solid-svg-icons';
 import {
     faHeart,
@@ -36,6 +37,7 @@ library.add(
   faCheck,
   faRotate,
   faDiscord,
+  faCircleInfo,
 );
 
 // const TronWeb = require('tronweb');
@@ -362,8 +364,8 @@ const App = () => {
           </Link>
         </div>
         <div className="sidebar_block sidebar_block_bottom">
-          <a className="discord_block" href="https://discord.gg/kYnwVVqf" target="_blank" rel="noopener noreferrer">
-            <FontAwesomeIcon icon={['fab', 'discord']} />Join Discord Community!
+          <a className="discord_block" href="https://docs.google.com/presentation/d/1-OkhgdZIFJuXmFKdQRAFIxKvY-MCsWMhgd02l6AXjOE/" target="_blank" rel="noopener noreferrer">
+            <FontAwesomeIcon icon={['fas', 'circle-info']} />About NFTBL
           </a>
           <div className="subtitle" style={{ fontSize: 12 }}>Made for Tron 2022</div>
         </div>
