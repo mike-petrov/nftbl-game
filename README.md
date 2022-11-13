@@ -24,7 +24,7 @@ Web3 NFT Football Management game-changing decentralized application with Smart 
 ## Tokenomics
 ![intro](/images/tokenomics.png)
 
-## Roadmap
-![intro](/images/roadmap.png)
+## Matches with Real Opponent
+![intro](/images/real_opponent.png)
 
-[Tron 2022 Hackathon Project](https://trons3.devpost.com/)
+[Tron 2022 Hackathon Project Season 3](https://trons3.devpost.com/)
