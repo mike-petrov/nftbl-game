@@ -9,50 +9,112 @@ contract FootballGame {
     PlayersV4 public players;
     BallV2 public ballContract;
 
-    constructor(PlayersV4 _players, BallV2 _ballContract) {
-        players = _players;
-        ballContract = _ballContract;
-    }
+    mapping (uint => EnergyInfo) energy;
+
+    uint[][] public registeredTeams;
+    mapping (address => uint) private teamIndex;
+    mapping (uint => address) private userOfTeam;
+
 
     enum MatchResult{Draw, AttackerWin, AttackerLose}
 
-    event MatchHappened(uint attackerId, uint defenderId, MatchResult result);
-
-    mapping (uint => EnergyInfo) energy;
+    event MatchHappened(uint[] attackerTeam, uint[] defenderTeam, uint[] playersResult, uint matchResult);
 
     struct EnergyInfo{
         uint128 lastTimestamp;
         uint128 lastAmount;
     }
 
-    function play(uint myId, uint betAmount) external returns(MatchResult result){
-        require(players.ownerOf(myId) == msg.sender, "wrong my id");
+    constructor(PlayersV4 _players, BallV2 _ballContract) {
+        players = _players;
+        ballContract = _ballContract;
+    }
+
+    function getRegisteredTeam(address adr) public view returns(uint[] memory team){
+        team = registeredTeams[teamIndex[adr]];
+    }
+
+    function play(uint[] calldata team, uint betAmount) external returns(uint[] memory playersResult, uint matchResult){
+        for (uint i = 0; i < team.length; i++) {
+            require(players.ownerOf(team[i]) == msg.sender, "wrong players id");
+        }
+
         require(ballContract.balanceOf(msg.sender) >= betAmount, "not enough BALLS for bet");
 
-        uint opponentId = uint256(keccak256(abi.encode(block.timestamp, block.number))) % players.totalSupply();
+        playersResult = new uint[](5);
+        int8 matchScore;
 
-        (, , , , , , , uint256 myLvl) = players.allPlayers(myId);
-        (, , , , , , , uint256 opponentLvl) = players.allPlayers(opponentId);
+        uint[] memory opponentTeam = registeredTeams[uint256(keccak256(abi.encode(block.timestamp, block.number))) % registeredTeams.length];
 
-        uint myPoints = log2(myLvl/100 + 1) * (uint256(keccak256(abi.encode(block.timestamp, myId))) % 4 + 1);
-        uint opponentPoints = log2(opponentLvl/100 + 1) * (uint256(keccak256(abi.encode(block.timestamp, opponentId))) % 4 + 1);
+        for (uint i = 0; i < 5; i++) {
+            (, , , , , , , uint256 myPlayerLvl) = players.allPlayers(team[i]);
+            (, , , , , , , uint256 opponentPlayerLvl) = players.allPlayers(opponentTeam[i]);
+            uint myPoints = log2(myPlayerLvl/100 + 1) * (uint256(keccak256(abi.encode(block.timestamp, team[i]))) % 4 + 1);
+            uint opponentPoints = log2(opponentPlayerLvl/100 + 1) * (uint256(keccak256(abi.encode(block.timestamp, opponentTeam[i]))) % 4 + 1);
+            
+            if(myPoints > opponentPoints) {
+                playersResult[i] = 1;
+                matchScore++;
+            }
+            if(myPoints < opponentPoints) {
+                playersResult[i] = 2;
+                matchScore--;
+            }
+        }
 
-        if(myPoints > opponentPoints) result = MatchResult.AttackerWin;
-        if(myPoints < opponentPoints) result = MatchResult.AttackerLose;
+        if(matchScore > 0) matchResult = 1;
+        if(matchScore < 0) matchResult = 2;
 
-        EnergyInfo memory info = energy[myId];
-        info.lastAmount = getEnergy(myId) - 10;
-        info.lastTimestamp = uint128(block.timestamp);
-        energy[myId] = info;
+        // EnergyInfo memory info = energy[myId];
+        // info.lastAmount = getEnergy(myId) - 10;
+        // info.lastTimestamp = uint128(block.timestamp);
+        // energy[myId] = info;
 
-        if(result == MatchResult.AttackerWin){
+        if(matchResult == 1){
             ballContract.mintBall(msg.sender, betAmount);
         }
-        if(result == MatchResult.AttackerLose){
+        if(matchResult == 2){
             ballContract.burnBalls(msg.sender, betAmount);
         }
 
-        emit MatchHappened(myId, opponentId, result);
+        emit MatchHappened(team, opponentTeam, playersResult, matchResult);
+    }
+
+    function register(uint[] calldata team) external {
+        for (uint i = 0; i < team.length; i++) {
+            require(players.ownerOf(team[i]) == msg.sender, "wrong players id");
+        }
+
+        uint index = teamIndex[msg.sender];
+        if(teamIndex[msg.sender] == 0){
+            index = registeredTeams.length;
+            registeredTeams.push(team);
+        }
+
+        userOfTeam[index] = msg.sender;
+        teamIndex[msg.sender] = index;
+    }
+
+    function unregister() public {
+        uint index = teamIndex[msg.sender];
+        require(index != 0, "You are not registered any team");
+
+        uint curCount = registeredTeams.length;
+
+        if(curCount - 1 != index){
+            uint[] memory lastTeam = registeredTeams[curCount - 1];
+            address lastTeamUser = userOfTeam[curCount - 1];
+
+            //Move last team to user slot
+            userOfTeam[index] = lastTeamUser;
+            teamIndex[lastTeamUser] = index;
+            registeredTeams[index] = lastTeam;
+        }
+
+        registeredTeams.pop();
+        delete userOfTeam[index];
+        delete teamIndex[msg.sender];
+        
     }
 
     function getEnergy(uint id) public view returns(uint128 amount){
